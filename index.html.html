@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roku Ad Experiences — Gap Analysis & Opportunity Study</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#6F1AB1;--midnight:#3D0066;--darkpur:#662D91;
+  --lavender:#E8D5F5;--soft:#F3EBF9;--offwhite:#FAF7FD;
+  --gray:#6B7280;--dark:#1A0035;
+  --green:#22C55E;--amber:#F59E0B;--red:#EF4444;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--offwhite);color:var(--dark);overflow-x:hidden}
+
+/* ── TOP NAV (tab bar) ── */
+.topnav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(61,0,102,.98);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.topnav-inner{display:flex;align-items:stretch;height:52px;padding:0 32px}
+.nav-brand{font-weight:700;font-size:14px;letter-spacing:5px;color:white;text-transform:uppercase;display:flex;align-items:center;padding-right:32px;border-right:1px solid rgba(255,255,255,.1);margin-right:8px;flex-shrink:0}
+.tab-btn{
+  padding:0 20px;font-size:12px;font-weight:600;color:rgba(255,255,255,.45);
+  border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;
+  transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;letter-spacing:.3px;
+}
+.tab-btn:hover{color:rgba(255,255,255,.8)}
+.tab-btn.active{color:white;border-bottom-color:#C896F0}
+
+/* ── CONTENT PANES ── */
+.pane{display:none;min-height:calc(100vh - 52px);padding-top:52px}
+.pane.active{display:block}
+
+/* ── HERO / OVERVIEW ── */
+.hero{
+  min-height:calc(100vh - 52px);
+  background:linear-gradient(135deg,#3D0066 0%,#6F1AB1 55%,#2A0050 100%);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:80px 80px 60px;position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(155,81,217,.3) 0%,transparent 60%),radial-gradient(ellipse at 15% 80%,rgba(111,26,177,.4) 0%,transparent 50%)}
+.hero-tag{font-size:11px;font-weight:700;letter-spacing:4px;color:rgba(255,255,255,.45);text-transform:uppercase;margin-bottom:20px;position:relative}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(38px,5.5vw,72px);color:white;line-height:1.08;max-width:780px;position:relative;margin-bottom:14px}
+.hero h1 em{font-style:italic;color:#C896F0}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.6);max-width:520px;line-height:1.65;margin-bottom:44px;position:relative}
+.hero-stats{display:flex;gap:44px;position:relative;border-top:1px solid rgba(255,255,255,.12);padding-top:36px;margin-bottom:48px}
+.stat-big{font-family:'DM Serif Display',serif;font-size:34px;color:white;display:block}
+.stat-lbl-sm{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px}
+.hero-author{font-size:12px;color:rgba(255,255,255,.35);line-height:1.7}
+
+/* thesis */
+.thesis-block{background:rgba(0,0,0,.2);border-radius:16px;padding:36px 40px;max-width:900px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08)}
+.thesis-block blockquote{font-family:'DM Serif Display',serif;font-size:clamp(18px,2.5vw,28px);color:white;line-height:1.3;margin-bottom:20px}
+.voice-box{background:rgba(111,26,177,.3);border-left:3px solid #C896F0;padding:14px 20px;border-radius:0 8px 8px 0;margin-bottom:28px}
+.voice-box strong{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#C896F0;margin-bottom:6px}
+.voice-box p{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;font-style:italic}
+.arc-row{display:flex;gap:0}
+.arc-item{flex:1;padding:20px 22px;border:1px solid rgba(255,255,255,.08);position:relative}
+.arc-item:not(:last-child)::after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:#9B51D9;font-size:16px;z-index:1}
+.arc-num{width:30px;height:30px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:white;margin-bottom:10px}
+.arc-title{font-size:12px;font-weight:700;color:white;margin-bottom:6px}
+.arc-desc{font-size:11px;color:rgba(255,255,255,.45);line-height:1.5;margin-bottom:8px}
+.arc-connector{font-size:10px;color:#9B51D9;font-style:italic}
+
+/* ── GAP PAGE LAYOUT ── */
+.gap-page{padding:40px 0}
+
+/* sub-tab bar */
+.sub-tabs{
+  display:flex;gap:0;background:white;
+  border-bottom:2px solid var(--lavender);
+  padding:0 80px;position:sticky;top:52px;z-index:100;
+}
+.sub-btn{
+  padding:14px 28px;font-size:13px;font-weight:600;
+  color:var(--gray);border:none;background:transparent;
+  cursor:pointer;border-bottom:2px solid transparent;
+  margin-bottom:-2px;transition:all .2s;font-family:'DM Sans',sans-serif;
+  display:flex;align-items:center;gap:8px;
+}
+.sub-btn:hover{color:var(--purple)}
+.sub-btn.active{color:var(--purple);border-bottom-color:var(--purple)}
+.sub-chip{font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.5px;text-transform:uppercase}
+.chip-gap{background:rgba(239,68,68,.1);color:var(--red)}
+.chip-opp{background:rgba(111,26,177,.1);color:var(--purple)}
+.chip-proto{background:rgba(34,197,94,.1);color:var(--green)}
+
+/* sub-panes */
+.sub-pane{display:none;padding:48px 80px}
+.sub-pane.active{display:block}
+
+/* section headings */
+.sec-eyebrow{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--purple);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.sec-eyebrow::before{content:'';display:block;width:24px;height:2px;background:var(--purple)}
+.sec-h2{font-family:'DM Serif Display',serif;font-size:clamp(24px,3vw,38px);color:var(--midnight);line-height:1.15;margin-bottom:12px}
+.sec-sub{font-size:14px;color:var(--gray);max-width:560px;line-height:1.65;margin-bottom:36px}
+
+/* split layout */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;margin-bottom:36px}
+.split.thirds{grid-template-columns:1fr 1fr 1fr}
+
+/* stat strip */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:36px}
+.stat-box{background:var(--lavender);border-radius:12px;padding:18px;text-align:center}
+.stat-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--purple);display:block;margin-bottom:6px}
+.stat-lbl{font-size:11px;color:var(--darkpur);line-height:1.4}
+
+/* problem card */
+.prob-card{background:white;border-radius:14px;padding:28px;border:1px solid rgba(111,26,177,.1);box-shadow:0 2px 12px rgba(61,0,102,.05)}
+.prob-card h3{font-size:14px;font-weight:700;color:var(--midnight);margin-bottom:12px}
+.prob-card p{font-size:13px;color:var(--gray);line-height:1.7}
+
+/* quote */
+.quote-box{background:var(--lavender);border-left:4px solid var(--purple);border-radius:0 10px 10px 0;padding:16px 20px}
+.quote-box p{font-size:13px;color:var(--darkpur);font-style:italic;line-height:1.6;margin-bottom:8px}
+.quote-box cite{font-size:11px;color:var(--gray)}
+
+/* comp table */
+.comp-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:36px}
+.comp-table th{background:var(--midnight);color:white;padding:10px 14px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.5px}
+.comp-table th:first-child{border-radius:10px 0 0 0}
+.comp-table th:last-child{border-radius:0 10px 0 0}
+.comp-table td{padding:10px 14px;border-bottom:1px solid var(--lavender);vertical-align:middle}
+.comp-table tr:nth-child(even) td{background:var(--soft)}
+.comp-table .roku-col{background:rgba(111,26,177,.06)!important;font-weight:600;color:var(--midnight)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+
+/* opportunity */
+.big-idea-box{background:linear-gradient(135deg,var(--midnight),#4a0085);border-radius:14px;padding:28px 32px;color:white;margin-bottom:28px}
+.big-idea-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C896F0;margin-bottom:10px}
+.big-idea-text{font-family:'DM Serif Display',serif;font-size:clamp(16px,2vw,22px);line-height:1.35;margin-bottom:12px}
+.big-idea-sub{font-size:13px;color:rgba(255,255,255,.6);line-height:1.6;font-style:italic}
+
+.option-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.opt-card{background:white;border-radius:12px;border:1px solid rgba(111,26,177,.12);overflow:hidden;box-shadow:0 2px 10px rgba(61,0,102,.05)}
+.opt-card-top{background:var(--purple);padding:12px 16px;display:flex;align-items:center;gap:10px}
+.opt-card-top span{font-size:18px}
+.opt-card-top strong{font-size:12px;font-weight:700;color:white}
+.opt-card-body{padding:14px 16px;font-size:12px;color:var(--gray);line-height:1.6}
+
+.risk-box{background:#FFFBEB;border:1px solid rgba(245,158,11,.3);border-left:4px solid var(--amber);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:24px}
+.risk-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#B45309;margin-bottom:6px}
+.risk-text{font-size:12.5px;color:#78350F;line-height:1.6}
+
+.validate-box{background:var(--soft);border-radius:12px;padding:20px 24px;border:1px solid rgba(111,26,177,.1)}
+.validate-lbl{font-size:11px;font-weight:700;color:var(--midnight);margin-bottom:12px;letter-spacing:.5px;text-transform:uppercase}
+.validate-item{display:flex;gap:12px;margin-bottom:10px;font-size:12px;color:var(--gray);line-height:1.55}
+.validate-item:last-child{margin-bottom:0}
+.v-arrow{color:var(--purple);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* revenue math */
+.rev-split{display:grid;grid-template-columns:220px 1fr;gap:32px;background:white;border-radius:14px;border:1px solid rgba(111,26,177,.1);overflow:hidden;margin-bottom:24px}
+.rev-left{background:var(--midnight);padding:28px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.rev-label{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.rev-num{font-family:'DM Serif Display',serif;font-size:42px;color:white;line-height:1;margin-bottom:8px}
+.rev-sublbl{font-size:11px;color:rgba(255,255,255,.4);line-height:1.5;margin-bottom:10px}
+.rev-caveat{font-size:10px;color:rgba(255,255,255,.25);font-style:italic}
+.rev-right{padding:24px 28px}
+.rev-right h4{font-size:13px;font-weight:700;color:var(--midnight);margin-bottom:16px}
+.assumption{display:flex;gap:12px;margin-bottom:12px;font-size:12px;color:var(--gray);line-height:1.55}
+.assumption:last-child{margin-bottom:0}
+.a-num{width:22px;height:22px;border-radius:50%;background:var(--purple);color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.sensitivity{background:var(--soft);border-radius:8px;padding:12px 16px;font-size:11.5px;color:var(--gray);line-height:1.6;border-left:3px solid var(--purple)}
+
+/* prototype */
+.proto-header{background:white;border-radius:14px;padding:20px 24px;border:1px solid rgba(111,26,177,.1);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.proto-title-txt{font-size:15px;font-weight:700;color:var(--midnight)}
+.proto-desc-txt{font-size:12px;color:var(--gray);margin-top:3px}
+.proto-badge{background:rgba(34,197,94,.1);color:var(--green);font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid rgba(34,197,94,.2);letter-spacing:.3px}
+
+/* demo shell */
+.demo-shell{background:#0f0020;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06)}
+.demo-bar{background:rgba(255,255,255,.04);padding:12px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.05)}
+.ddot{width:10px;height:10px;border-radius:50%}
+.demo-lbl{font-size:11px;color:rgba(255,255,255,.28);margin-left:6px}
+.demo-inner{padding:24px}
+
+/* gap1 sim */
+.sim-controls{display:flex;gap:0;border-radius:10px;overflow:hidden;border:1.5px solid rgba(111,26,177,.5);margin-bottom:20px}
+.sim-btn{flex:1;padding:12px 0;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .25s}
+.sim-btn.on{background:var(--purple);color:white}
+.sim-btn.off{background:rgba(255,255,255,.04);color:rgba(255,255,255,.4)}
+.sim-btn.off:hover{background:rgba(111,26,177,.15);color:rgba(255,255,255,.7)}
+.tv-frame{background:#000;border-radius:10px;overflow:hidden;border:3px solid #1a0035;margin-bottom:16px;aspect-ratio:16/9;display:flex;flex-direction:column}
+.tv-topbar{background:rgba(255,255,255,.06);padding:7px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0}
+.tv-logo{font-size:10px;font-weight:700;color:#C896F0;letter-spacing:2px}
+.tv-app-lbl{font-size:10px;color:rgba(255,255,255,.3)}
+.tv-body{flex:1;position:relative;display:flex;align-items:center;justify-content:center}
+.ad-scr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a0035,#2d0050);transition:opacity .5s}
+.ad-scr.hidden{opacity:0;pointer-events:none}
+.ad-badge-tv{background:var(--amber);color:#1a0035;font-size:8px;font-weight:700;letter-spacing:2px;padding:2px 8px;border-radius:4px;margin-bottom:8px;text-transform:uppercase}
+.ad-brand-tv{font-size:18px;font-weight:700;color:white;margin-bottom:3px}
+.ad-tag-tv{font-size:10px;color:rgba(255,255,255,.5)}
+.ad-chip{position:absolute;bottom:7px;right:7px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;color:white;transition:all .4s}
+.cnt-scr{position:absolute;inset:0;background:linear-gradient(180deg,#0a0014,#1a0035);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.cnt-scr p{font-size:12px;color:rgba(255,255,255,.3);font-style:italic}
+.cnt-scr .pi{font-size:28px;opacity:.25}
+.tl-sec{background:rgba(255,255,255,.04);border-radius:10px;padding:16px 18px}
+.tl-hdr{font-size:10px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:12px}
+.app-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.app-row:last-child{margin-bottom:0}
+.app-name{font-size:10px;color:rgba(255,255,255,.35);width:76px;flex-shrink:0}
+.slot-track{display:flex;gap:3px;flex:1}
+.slot{height:24px;border-radius:4px;flex:1;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;transition:all .5s cubic-bezier(.34,1.56,.64,1)}
+.slot.content{background:rgba(111,26,177,.2);color:rgba(255,255,255,.25)}
+.slot.ad-bad{background:rgba(239,68,68,.75);color:white}
+.slot.ad-good{background:rgba(34,197,94,.2);color:rgba(34,197,94,.8);border:1px solid rgba(34,197,94,.3)}
+.insight{margin-top:14px;padding:11px 14px;border-radius:8px;font-size:12px;line-height:1.55;transition:all .4s}
+.insight.bad{background:rgba(239,68,68,.1);color:rgba(239,68,68,.9);border:1px solid rgba(239,68,68,.2)}
+.insight.good{background:rgba(34,197,94,.08);color:rgba(34,197,94,.9);border:1px solid rgba(34,197,94,.2)}
+
+/* gap2 ads manager */
+.am-outer{background:#F8F5FF;border-radius:10px;overflow:hidden}
+.am-topbar{background:var(--midnight);padding:11px 18px;display:flex;align-items:center;justify-content:space-between}
+.am-topbar-logo{font-size:12px;font-weight:700;color:white;letter-spacing:1px}
+.am-dots{display:flex;gap:5px;align-items:center}
+.am-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s}
+.am-dot.active{background:#C896F0;width:18px;border-radius:4px}
+.am-dot.done{background:var(--green)}
+.am-body{padding:24px}
+.stepper{display:flex;margin-bottom:22px}
+.step-item{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.step-item:not(:last-child)::after{content:'';position:absolute;left:50%;top:15px;width:100%;height:2px;background:rgba(111,26,177,.15);z-index:0}
+.step-circle{width:30px;height:30px;border-radius:50%;border:2px solid rgba(111,26,177,.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gray);background:white;z-index:1;transition:all .3s}
+.step-circle.active{border-color:var(--purple);color:var(--purple);box-shadow:0 0 0 3px rgba(111,26,177,.12)}
+.step-circle.done{background:var(--purple);border-color:var(--purple);color:white}
+.step-lbl{font-size:10px;color:var(--gray);margin-top:5px;text-align:center;font-weight:500}
+.panel{display:none}.panel.active{display:block}
+.field-group{margin-bottom:16px}
+.field-lbl{font-size:11px;font-weight:700;color:var(--midnight);letter-spacing:.5px;margin-bottom:6px;display:block}
+.field-input{width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid rgba(111,26,177,.2);font-family:'DM Sans',sans-serif;font-size:13px;background:white;color:var(--dark);outline:none;transition:border .2s}
+.field-input:focus{border-color:var(--purple)}
+.field-select{width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid rgba(111,26,177,.2);font-family:'DM Sans',sans-serif;font-size:13px;background:white;color:var(--dark);outline:none}
+.gen-btn{background:var(--purple);color:white;border:none;padding:11px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.gen-btn:hover:not(:disabled){background:var(--darkpur);transform:translateY(-1px)}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.prog-box{background:var(--lavender);border-radius:10px;padding:18px;margin-top:14px;display:none}
+.prog-box.show{display:block}
+.prog-track{height:4px;background:rgba(111,26,177,.15);border-radius:2px;overflow:hidden;margin:8px 0}
+.prog-fill{height:100%;background:var(--purple);width:0%;border-radius:2px;transition:width .08s linear}
+.prog-status{font-size:11px;color:var(--darkpur);text-align:center}
+.result-card{background:white;border-radius:10px;border:1.5px solid rgba(111,26,177,.2);padding:18px;margin-top:14px;display:none}
+.result-card.show{display:block}
+.result-preview{background:linear-gradient(135deg,var(--midnight),var(--purple));border-radius:8px;height:110px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:12px}
+.result-preview-text{color:white;font-size:14px;font-weight:600}
+.ok-badge{position:absolute;bottom:8px;right:8px;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 10px;font-size:11px;color:white;font-weight:600}
+.r-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.r-tag{background:var(--lavender);color:var(--purple);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.next-btn{background:var(--purple);color:white;border:none;padding:9px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.next-btn:hover{background:var(--darkpur)}
+.next-btn:disabled{opacity:.45;cursor:not-allowed}
+.back-btn{background:transparent;color:var(--gray);border:1.5px solid rgba(111,26,177,.2);padding:9px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-right:10px;transition:all .2s}
+.fmt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.fmt-card{border:1.5px solid rgba(111,26,177,.15);border-radius:10px;padding:18px 12px;cursor:pointer;transition:all .2s;background:white;text-align:center}
+.fmt-card:hover{border-color:rgba(111,26,177,.4);background:var(--soft)}
+.fmt-card.picked{border-color:var(--purple);background:var(--soft);box-shadow:0 0 0 3px rgba(111,26,177,.1)}
+.fmt-icon{font-size:26px;margin-bottom:8px}
+.fmt-name{font-size:12px;font-weight:700;color:var(--midnight);margin-bottom:3px}
+.fmt-desc{font-size:10px;color:var(--gray);line-height:1.4}
+.launch-box{background:var(--lavender);border-radius:12px;padding:24px;text-align:center}
+.l-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.l-stat{background:white;border-radius:8px;padding:12px}
+.l-stat-num{font-family:'DM Serif Display',serif;font-size:20px;color:var(--purple);display:block;margin-bottom:3px}
+.l-stat-lbl{font-size:10px;color:var(--gray)}
+
+/* gap3 dashboard */
+.dash{background:#FAF7FD;border-radius:0;padding:22px}
+.dash-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.dash-title-txt{font-size:14px;font-weight:700;color:var(--midnight)}
+.dash-sub-txt{font-size:11px;color:var(--gray);margin-top:2px}
+.live-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green);font-weight:600;background:rgba(34,197,94,.08);padding:4px 10px;border-radius:20px;border:1px solid rgba(34,197,94,.2);flex-shrink:0}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.camp-tabs{display:flex;gap:6px;margin-bottom:16px}
+.c-tab{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid rgba(111,26,177,.2);color:var(--gray);transition:all .2s;background:white}
+.c-tab.active{background:var(--purple);border-color:var(--purple);color:white}
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.m-card{background:white;border-radius:10px;padding:14px;border:1px solid rgba(111,26,177,.08);cursor:pointer;transition:all .2s;position:relative}
+.m-card:hover{border-color:rgba(111,26,177,.3);transform:translateY(-2px);box-shadow:0 4px 14px rgba(61,0,102,.07)}
+.m-card::after{content:'▾ drill in';position:absolute;bottom:5px;right:8px;font-size:8px;color:rgba(111,26,177,.35);font-weight:600;opacity:0;transition:opacity .2s}
+.m-card:hover::after{opacity:1}
+.m-lbl{font-size:9px;color:var(--gray);font-weight:600;letter-spacing:.5px;margin-bottom:7px;text-transform:uppercase}
+.m-val{font-family:'DM Serif Display',serif;font-size:22px;color:var(--midnight);display:block;margin-bottom:3px;transition:all .4s}
+.m-delta{font-size:10px;color:var(--green);font-weight:600}
+.drill-panel{background:white;border-radius:10px;border:1.5px solid rgba(111,26,177,.2);padding:14px;margin-bottom:12px;display:none;animation:slideIn .2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.chart-card{background:white;border-radius:10px;padding:16px;border:1px solid rgba(111,26,177,.08);margin-bottom:12px}
+.chart-lbl{font-size:12px;font-weight:700;color:var(--midnight);margin-bottom:12px}
+.bar-row{display:flex;gap:5px;align-items:flex-end;height:72px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bar{width:100%;background:var(--purple);border-radius:4px 4px 0 0;min-height:4px;transition:height .7s cubic-bezier(.34,1.2,.64,1),background .3s;position:relative}
+.bar:hover{background:var(--darkpur)}
+.bar-tip{position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:var(--midnight);color:white;font-size:9px;padding:2px 6px;border-radius:4px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none}
+.bar:hover .bar-tip{opacity:1}
+.bar-day{font-size:9px;color:var(--gray)}
+.roas-panel{background:white;border-radius:10px;padding:16px;border:1px solid rgba(111,26,177,.08);display:flex;align-items:center;gap:18px;margin-bottom:12px}
+.gauge-wrap{position:relative;width:72px;height:72px;flex-shrink:0}
+.gauge-svg{transform:rotate(-90deg)}
+.gauge-bg{fill:none;stroke:var(--lavender);stroke-width:7}
+.gauge-arc{fill:none;stroke:var(--purple);stroke-width:7;stroke-linecap:round;stroke-dasharray:0 226;transition:stroke-dasharray 1.2s cubic-bezier(.34,1,.64,1)}
+.gauge-lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:16px;color:var(--purple)}
+.roas-text h4{font-size:13px;font-weight:700;color:var(--midnight);margin-bottom:3px}
+.roas-text p{font-size:11px;color:var(--gray);line-height:1.55}
+.dash-controls{display:flex;gap:8px}
+.d-btn{padding:8px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid}
+.d-btn.primary{background:var(--purple);border-color:var(--purple);color:white}
+.d-btn.primary:hover{background:var(--darkpur)}
+.d-btn.secondary{background:transparent;border-color:rgba(111,26,177,.25);color:var(--purple)}
+.d-btn.secondary:hover{background:var(--soft)}
+
+/* ── PRIORITIZE TAB ── */
+.prioritize-page{padding:48px 80px}
+.p-grid{display:grid;grid-template-columns:1fr 360px;gap:48px;align-items:start}
+.twobytwo-wrap{position:relative;padding-left:44px;padding-bottom:28px}
+.axis-y-lbl{position:absolute;left:0;top:0;bottom:28px;display:flex;align-items:center}
+.axis-y-lbl span{font-size:10px;color:var(--gray);white-space:nowrap;transform:rotate(-90deg);letter-spacing:.5px}
+.axis-x-row{display:flex;justify-content:space-between;margin-top:7px}
+.axis-x-row span{font-size:10px;color:var(--gray);letter-spacing:.5px}
+.quad-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px;border-radius:12px;overflow:hidden;border:1px solid rgba(111,26,177,.15)}
+.quad{background:white;padding:20px;min-height:150px;position:relative;transition:background .2s;border:1px solid rgba(111,26,177,.06)}
+.quad:hover{background:var(--soft)}
+.quad-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.quad-lbl.bright{color:var(--purple)}
+.quad-lbl.dim{color:rgba(111,26,177,.3)}
+.bubble{display:flex;align-items:center;gap:7px;background:var(--purple);border-radius:20px;padding:6px 12px;margin-bottom:7px;cursor:pointer;transition:all .2s}
+.bubble:hover{background:var(--darkpur);transform:translateX(2px)}
+.bubble.soft{background:var(--darkpur)}
+.bubble-n{width:17px;height:17px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0}
+.bubble-t{font-size:11px;font-weight:600;color:white}
+.q-detail{background:white;border-radius:10px;padding:16px;border:1px solid rgba(111,26,177,.12);margin-top:14px;display:none;animation:slideIn .25s ease;box-shadow:0 2px 12px rgba(61,0,102,.07)}
+.q-det-title{font-size:13px;font-weight:700;color:var(--midnight);margin-bottom:6px}
+.q-det-body{font-size:12px;color:var(--gray);line-height:1.65}
+.week1-panel{background:var(--midnight);border-radius:14px;padding:24px}
+.week1-title{font-size:13px;font-weight:700;color:white;margin-bottom:16px}
+.q-item{display:flex;gap:11px;margin-bottom:13px;align-items:flex-start}
+.q-item:last-child{margin-bottom:0}
+.q-num{width:22px;height:22px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0;margin-top:1px}
+.q-text{font-size:12px;color:rgba(255,255,255,.6);line-height:1.6}
+
+/* closing */
+.closing-bar{background:var(--purple);padding:28px 80px;text-align:center}
+.closing-bar p{font-size:14px;font-weight:600;color:white;line-height:1.65}
+
+/* refs */
+.refs-page{padding:60px 80px;background:white}
+.refs-h{font-family:'DM Serif Display',serif;font-size:32px;color:var(--midnight);margin-bottom:6px}
+.refs-sub{font-size:13px;color:var(--gray);margin-bottom:32px;font-style:italic}
+.refs-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 48px}
+.ref-item{font-size:11.5px;color:var(--gray);line-height:1.65;padding:8px 0;border-bottom:1px solid rgba(111,26,177,.07)}
+.ref-n{color:var(--purple);font-weight:700;margin-right:6px}
+
+footer{background:var(--dark);padding:28px 80px;display:flex;align-items:center;justify-content:space-between}
+.footer-brand{font-size:13px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:4px}
+.footer-note{font-size:12px;color:rgba(255,255,255,.2)}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV (TABS) -->
+<div class="topnav">
+  <div class="topnav-inner">
+    <div class="nav-brand">Roku</div>
+    <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
+    <button class="tab-btn" onclick="showTab('gap1')">Gap 1 — Frequency</button>
+    <button class="tab-btn" onclick="showTab('gap2')">Gap 2 — Interactive</button>
+    <button class="tab-btn" onclick="showTab('gap3')">Gap 3 — Attribution</button>
+    <button class="tab-btn" onclick="showTab('prioritize')">Prioritize</button>
+    <button class="tab-btn" onclick="showTab('refs')">References</button>
+  </div>
+</div>
+
+<!-- ══ OVERVIEW ══════════════════════════════════════════════ -->
+<div class="pane active" id="pane-overview">
+  <section class="hero">
+    <div class="hero-tag">APM Candidate Study · Ad Experiences · April 2026</div>
+    <h1>Ad Experiences<br><em>Gap Analysis &</em><br>Opportunity Study</h1>
+    <p class="hero-sub">Roku has 100M households, 145B streaming hours, and the #1 TV OS in North America. The question is whether it leads the experience layer before competitors close the gap.</p>
+    <div class="hero-stats">
+      <div><span class="stat-big">100M+</span><div class="stat-lbl-sm">Active Streaming Households</div></div>
+      <div><span class="stat-big">$2.33B</span><div class="stat-lbl-sm">Ad Revenue FY 2025</div></div>
+      <div><span class="stat-big">$60M+</span><div class="stat-lbl-sm">Estimated Opportunity</div></div>
+      <div><span class="stat-big">July '26</span><div class="stat-lbl-sm">Samsung + Amazon Shoppable Launch</div></div>
+    </div>
+    <div class="thesis-block">
+      <blockquote>"Roku has everything it needs to lead the experience layer of CTV advertising — the question is whether it moves before competitors do."</blockquote>
+      <div class="voice-box">
+        <strong>Why this study?</strong>
+        <p>At EPAM, I spent two years reducing friction in Mastercard payment workflows. The friction here is different — it's between Roku's data advantage and the ad experience viewers actually see — but the PM instinct is the same: find where the platform has what it needs to solve the problem, and build the bridge.</p>
+      </div>
+      <div class="arc-row">
+        <div class="arc-item"><div class="arc-num">1</div><div class="arc-title">Relevance & Frequency</div><div class="arc-desc">Roku's first-party data isn't surfacing in the ad experience viewers see. No cross-app frequency cap exists at the OS level.</div><div class="arc-connector">Fix relevance so ads feel worth watching →</div></div>
+        <div class="arc-item"><div class="arc-num">2</div><div class="arc-title">Interactive Format Access</div><div class="arc-desc">Action Ads drive 47% higher purchase intent — but only enterprise brands can use them. 90% of Ads Manager advertisers are locked out.</div><div class="arc-connector">Make interactive formats accessible so engagement scales →</div></div>
+        <div class="arc-item"><div class="arc-num">3</div><div class="arc-title">Attribution & Feedback Loop</div><div class="arc-desc">Advertisers from Meta and Google expect real-time ROAS signals. Roku's measurement lag risks budget flight to Amazon DSP.</div><div class="arc-connector">Prove it with measurement so budgets follow.</div></div>
+      </div>
+    </div>
+    <div class="hero-author" style="position:relative;margin-top:32px">MS Business Analytics & Project Management · University of Connecticut · April 2026</div>
+  </section>
+</div>
+
+<!-- ══ GAP 1 ═════════════════════════════════════════════════ -->
+<div class="pane" id="pane-gap1">
+  <div class="gap-page">
+    <div class="sub-tabs" id="subtabs-gap1">
+      <button class="sub-btn active" onclick="showSub('gap1','the-gap')">
+        <span class="sub-chip chip-gap">Gap</span> The Problem
+      </button>
+      <button class="sub-btn" onclick="showSub('gap1','opportunity')">
+        <span class="sub-chip chip-opp">Opportunity</span> The Idea & Options
+      </button>
+      <button class="sub-btn" onclick="showSub('gap1','prototype')">
+        <span class="sub-chip chip-proto">Prototype</span> See It in Action
+      </button>
+    </div>
+
+    <!-- GAP sub-pane -->
+    <div class="sub-pane active" id="gap1-the-gap">
+      <div class="sec-eyebrow">Gap 1 of 3 — The Root Cause</div>
+      <h2 class="sec-h2">Relevance & Frequency</h2>
+      <p class="sec-sub">Roku has 100M households of first-party data — but viewers still see the same ad 4× an hour across apps with no OS-level cap in place.</p>
+      <div class="stat-strip">
+        <div class="stat-box"><span class="stat-num">83%</span><div class="stat-lbl">of viewers value personalized ads — only 34% pay attention to them</div></div>
+        <div class="stat-box"><span class="stat-num">7.09×</span><div class="stat-lbl">avg CTV campaign frequency with only 19.6% household reach</div></div>
+        <div class="stat-box"><span class="stat-num">96%</span><div class="stat-lbl">of Roku HH see video ads — repetition is the #1 churn trigger</div></div>
+        <div class="stat-box"><span class="stat-num">20 min</span><div class="stat-lbl">avg time viewers spend finding content — relevance gap extends beyond ads</div></div>
+      </div>
+      <div class="split">
+        <div class="prob-card">
+          <h3>The Core Problem</h3>
+          <p>Frequency capping on Roku operates at the publisher level — not the OS level. A viewer watching Tubi, The Roku Channel, and Peacock in one evening can see the same Progressive ad 9 times — once per break per app — with no cross-platform cap in place.<br><br>Roku's own 2026 predictions acknowledge this: viewers will "revolt with their remotes" against egregious ad loads. Yet Roku's first-party data advantage — 145B streaming hours of viewing habits — is barely surfacing in the relevance of ads those viewers actually see.<br><br>This is the root cause gap. Fixing frequency and relevance at the OS layer unlocks everything downstream.</p>
+        </div>
+        <div>
+          <div class="quote-box" style="margin-bottom:20px">
+            <p>Seeing the same insurance commercial four times in one hour makes a viewer feel like the channel is broken — or deliberately disrespectful of their time.</p>
+            <cite>— Lore, T., CompanionLink, April 2026</cite>
+          </div>
+          <table class="comp-table">
+            <thead><tr><th>Platform</th><th>OS-Level Frequency Cap</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="roku-col">Roku</td><td class="roku-col">Per-publisher only</td><td><span class="dot" style="background:var(--amber)"></span>Partial</td></tr>
+              <tr><td>Amazon Fire TV</td><td>Amazon DSP cross-app</td><td><span class="dot" style="background:var(--amber)"></span>Partial</td></tr>
+              <tr><td>Samsung TV+</td><td>Improving via Amazon DSP</td><td><span class="dot" style="background:var(--amber)"></span>Improving</td></tr>
+              <tr><td>YouTube CTV</td><td>Cross-surface capping</td><td><span class="dot" style="background:var(--green)"></span>Strong</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPPORTUNITY sub-pane -->
+    <div class="sub-pane" id="gap1-opportunity">
+      <div class="sec-eyebrow">Opportunity 1</div>
+      <h2 class="sec-h2">Intelligent Ad Frequency at the OS Layer</h2>
+      <div class="big-idea-box">
+        <div class="big-idea-label">The Big Idea</div>
+        <div class="big-idea-text">Roku uses its unique OS-level position to enforce cross-app frequency caps and serve relevance signals that no individual publisher can replicate.</div>
+        <div class="big-idea-sub">Turning Roku's data moat into a viewer experience moat — and a competitive advantage no Amazon or Samsung can easily replicate without OS-level control.</div>
+      </div>
+      <div class="option-cards">
+        <div class="opt-card"><div class="opt-card-top"><span>🛡️</span><strong>Cross-App Frequency Cap</strong></div><div class="opt-card-body">OS-level intelligence caps ad repetition across all Roku apps. Viewer sees a given creative max 2× per session regardless of which app served it. No competitor without OS-level control can match this.</div></div>
+        <div class="opt-card"><div class="opt-card-top"><span>🎯</span><strong>Relevance Score Engine</strong></div><div class="opt-card-body">Surface Roku's first-party data (viewing history, genre affinity, time-of-day behavior) to advertisers in Ads Manager as a targeting signal — making campaigns smarter without requiring additional creative production.</div></div>
+        <div class="opt-card"><div class="opt-card-top"><span>🔄</span><strong>Creative Diversity Enforcement</strong></div><div class="opt-card-body">Require minimum creative rotation thresholds for campaigns above a set frequency — incentivizing advertisers to build 2–3 variants and automatically reducing viewer fatigue at scale.</div></div>
+      </div>
+      <div class="risk-box"><div class="risk-lbl">⚠ Tradeoff to Navigate</div><div class="risk-text">Publisher contracts may guarantee minimum ad fill rates — OS-level capping could force Roku to absorb unsold inventory or renegotiate deals with FAST partners like Tubi and Peacock. Resolution: tiered rollout starting with The Roku Channel (owned-and-operated), then expand to third-party publishers with revised fill guarantees backed by viewer retention data.</div></div>
+      <div class="validate-box"><div class="validate-lbl">How I'd Validate This</div><div class="validate-item"><span class="v-arrow">→</span><span>A/B test OS-level frequency cap (3×/session) vs. status quo on 500K households — measure session length, ad completion rate, and 30-day platform retention</span></div><div class="validate-item"><span class="v-arrow">→</span><span>Hypothesis: cap reduces irritation without measurably reducing advertiser reach at the 3× threshold — what does the data say?</span></div><div class="validate-item"><span class="v-arrow">→</span><span>Proxy metric: does a 10% improvement in ad experience NPS correlate with measurable lift in publisher retention and household ARPU?</span></div></div>
+    </div>
+
+    <!-- PROTOTYPE sub-pane -->
+    <div class="sub-pane" id="gap1-prototype">
+      <div class="proto-header">
+        <div><div class="proto-title-txt">OS-Level Frequency Cap Simulator</div><div class="proto-desc-txt">Toggle between the current state and the proposed solution — see the difference in real time</div></div>
+        <div class="proto-badge">▶ Interactive</div>
+      </div>
+      <div class="demo-shell">
+        <div class="demo-bar"><div class="ddot" style="background:#ff5f57"></div><div class="ddot" style="background:#ffbd2e"></div><div class="ddot" style="background:#28c840"></div><span class="demo-lbl">Frequency Cap Simulator — Gap 1</span></div>
+        <div class="demo-inner">
+          <div class="sim-controls">
+            <button class="sim-btn on" id="btn-without" onclick="setMode('without')">❌ Without OS Cap — Current State</button>
+            <button class="sim-btn off" id="btn-with" onclick="setMode('with')">✅ With OS-Level Cap — Proposed</button>
+          </div>
+          <div class="tv-frame">
+            <div class="tv-topbar"><span class="tv-logo">ROKU</span><span class="tv-app-lbl">Evening Session — Tubi → The Roku Channel → Peacock</span></div>
+            <div class="tv-body">
+              <div class="ad-scr" id="ad-scr"><div class="ad-badge-tv">Ad Break</div><div class="ad-brand-tv">Progressive Insurance</div><div class="ad-tag-tv">"Name Your Price" — 30 sec</div><div class="ad-chip" id="ad-chip" style="background:rgba(239,68,68,.7)">Shown 9× this session</div></div>
+              <div class="cnt-scr" id="cnt-scr"><div class="pi">▶</div><p>Content resumed — frequency cap active</p></div>
+            </div>
+          </div>
+          <div class="tl-sec">
+            <div class="tl-hdr">90-Min Session — Progressive Insurance ad exposure across 3 apps</div>
+            <div class="app-row"><span class="app-name">Tubi</span><div class="slot-track" id="track-tubi"></div></div>
+            <div class="app-row"><span class="app-name">Roku Channel</span><div class="slot-track" id="track-roku"></div></div>
+            <div class="app-row"><span class="app-name">Peacock</span><div class="slot-track" id="track-peacock"></div></div>
+            <div class="insight" id="insight"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GAP 2 ═════════════════════════════════════════════════ -->
+<div class="pane" id="pane-gap2">
+  <div class="gap-page">
+    <div class="sub-tabs" id="subtabs-gap2">
+      <button class="sub-btn active" onclick="showSub('gap2','the-gap')"><span class="sub-chip chip-gap">Gap</span> The Problem</button>
+      <button class="sub-btn" onclick="showSub('gap2','opportunity')"><span class="sub-chip chip-opp">Opportunity</span> The Idea & Options</button>
+      <button class="sub-btn" onclick="showSub('gap2','prototype')"><span class="sub-chip chip-proto">Prototype</span> See It in Action</button>
+    </div>
+
+    <div class="sub-pane active" id="gap2-the-gap">
+      <div class="sec-eyebrow">Gap 2 of 3 — The Missed Opportunity</div>
+      <h2 class="sec-h2">Interactive Format Access</h2>
+      <p class="sec-sub">Shoppable ads drive 47% higher purchase intent — but 90% of Ads Manager advertisers can't use them due to the creative production barrier.</p>
+      <div class="stat-strip">
+        <div class="stat-box"><span class="stat-num">118×</span><div class="stat-lbl">more likely to press OK on remote than scan a QR code</div></div>
+        <div class="stat-box"><span class="stat-num">47%</span><div class="stat-lbl">higher purchase intent from shoppable vs standard video</div></div>
+        <div class="stat-box"><span class="stat-num">58%</span><div class="stat-lbl">lift in unaided brand recall with interactive formats</div></div>
+        <div class="stat-box"><span class="stat-num">45%</span><div class="stat-lbl">of shoppable purchasers were new-to-brand</div></div>
+      </div>
+      <div class="split">
+        <div class="prob-card">
+          <h3>The Core Problem</h3>
+          <p>Roku's Action Ads and shoppable formats are proven — 118× more likely remote engagement than QR, 47% higher purchase intent, 45% of purchasers new-to-brand.<br><br>But they require finished video creative and production sophistication that small and mid-market advertisers on Roku Ads Manager simply don't have. The result: Roku's most powerful ad format is effectively reserved for enterprise brands.<br><br>Now Samsung + Amazon are launching equivalent shoppable formats in July 2026. The window to lock in mid-market advertisers before competitors do is closing fast.</p>
+        </div>
+        <div>
+          <div class="quote-box" style="border-left-color:var(--amber);margin-bottom:20px">
+            <p>It wasn't so long ago that people said no one would shop on the internet. Then no one would shop from their phones. In shoppable TV, Roku would like a word.</p>
+            <cite>— Toombs, B., Roku Brand Studio, Shoptalk 2025</cite>
+          </div>
+          <table class="comp-table">
+            <thead><tr><th>Platform</th><th>Interactive / Shoppable</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="roku-col">Roku</td><td class="roku-col">Action Ads + Shopify</td><td><span class="dot" style="background:var(--green)"></span>Strong — enterprise only</td></tr>
+              <tr><td>Amazon Fire TV</td><td>+ AI Creative (Smartly)</td><td><span class="dot" style="background:var(--green)"></span>Strong + accessible</td></tr>
+              <tr><td>Samsung TV+</td><td>Launching July 2026</td><td><span class="dot" style="background:var(--amber)"></span>Incoming threat</td></tr>
+              <tr><td>YouTube CTV</td><td>BuyNow only</td><td><span class="dot" style="background:var(--amber)"></span>Limited</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-pane" id="gap2-opportunity">
+      <div class="sec-eyebrow">Opportunity 2</div>
+      <h2 class="sec-h2">Democratize Interactive Formats for the Mid-Market</h2>
+      <div class="big-idea-box">
+        <div class="big-idea-label">The Big Idea</div>
+        <div class="big-idea-text">Embed AI-powered creative tools directly into Roku Ads Manager — removing the production bottleneck that prevents mid-market advertisers from accessing Action Ads.</div>
+        <div class="big-idea-sub">Before Samsung + Amazon's July 2026 shoppable launch, lock in the mid-market advertiser base with interactive formats they can activate in minutes, not weeks.</div>
+      </div>
+      <div class="option-cards">
+        <div class="opt-card"><div class="opt-card-top"><span>🤖</span><strong>AI Creative Studio</strong></div><div class="opt-card-body">Embed GenAI video creation into Ads Manager — advertisers input their URL or brand brief, AI generates a CTV-ready 15 or 30-sec spot with interactive overlay. No production team needed.</div></div>
+        <div class="opt-card"><div class="opt-card-top"><span>🧩</span><strong>Interactive Overlay Templates</strong></div><div class="opt-card-body">Pre-built Action Ad templates (OK to Shop, Send to Phone, QR) that any advertiser can attach to existing video creative with one click. Interactive without rebuilding from scratch.</div></div>
+        <div class="opt-card"><div class="opt-card-top"><span>🤝</span><strong>Creator × Brand Studio</strong></div><div class="opt-card-body">Co-branded native ad units pairing Roku creator content with brand messaging in one interactive format. Lower cost, higher authenticity, new inventory type for the platform.</div></div>
+      </div>
+      <div class="rev-split">
+        <div class="rev-left"><div class="rev-label">Estimated Opportunity</div><div class="rev-num">$46–70M</div><div class="rev-sublbl">incremental annual Ads Manager revenue</div><div class="rev-caveat">Conservative estimate — public figures only</div></div>
+        <div class="rev-right"><h4>Assumptions</h4><div class="assumption"><div class="a-num">1</div><span>Ads Manager base revenue ~$230–350M (10–15% of $2.33B platform ad revenue, Roku 8-K FY 2025)</span></div><div class="assumption"><div class="a-num">2</div><span>Interactive adoption currently &lt;10% of Ads Manager campaigns — documented creative production barrier</span></div><div class="assumption"><div class="a-num">3</div><span>Target: lift adoption to ~25% within 12 months of AI Creative Studio launch</span></div><div class="assumption"><div class="a-num">4</div><span>Interactive campaigns average 1.8–2× the effective CPM of standard video (Dentsu × Roku, 2025)</span></div><div class="sensitivity" style="margin-top:14px">Sensitivity: at 1.5× CPM multiplier the range is $35–52M. The 2× assumption is the most sensitive variable — internal Ads Manager data would refine this significantly.</div></div>
+      </div>
+      <div class="risk-box"><div class="risk-lbl">⚠ Tradeoff to Navigate</div><div class="risk-text">AI-generated creative carries brand safety risk at scale. There is also channel conflict — Roku's creative agency partners may view an in-house AI studio as competitive. Mitigation: position AI Creative as a tool for advertisers with no existing agency relationship, not a replacement for managed creative services.</div></div>
+      <div class="validate-box"><div class="validate-lbl">How I'd Validate This</div><div class="validate-item"><span class="v-arrow">→</span><span>Closed beta: AI Creative Studio with 200 Ads Manager SMB advertisers — measure time-to-launch, campaign CTR vs standard video, advertiser retention at 90 days</span></div><div class="validate-item"><span class="v-arrow">→</span><span>Test Interactive Overlay Templates on 50 existing campaigns — does adding OK-to-text overlay lift completion rate and conversion without incremental spend?</span></div><div class="validate-item"><span class="v-arrow">→</span><span>Proxy metric: interactive adoption reaching 15% of Ads Manager campaigns within 6 months signals the accessibility gap is closing</span></div></div>
+    </div>
+
+    <div class="sub-pane" id="gap2-prototype">
+      <div class="proto-header">
+        <div><div class="proto-title-txt">AI Creative Studio — Ads Manager Flow</div><div class="proto-desc-txt">Complete the 3-step flow: enter your brand, generate creative with AI, choose a format, and launch</div></div>
+        <div class="proto-badge">▶ Interactive</div>
+      </div>
+      <div class="demo-shell">
+        <div class="demo-bar"><div class="ddot" style="background:#ff5f57"></div><div class="ddot" style="background:#ffbd2e"></div><div class="ddot" style="background:#28c840"></div><span class="demo-lbl">Ads Manager — AI Creative Studio · Gap 2</span></div>
+        <div class="demo-inner" style="background:#F8F5FF;padding:0">
+          <div class="am-outer">
+            <div class="am-topbar"><span class="am-topbar-logo">Roku Ads Manager — AI Creative Studio</span><div class="am-dots"><div class="am-dot active" id="d1"></div><div class="am-dot" id="d2"></div><div class="am-dot" id="d3"></div></div></div>
+            <div class="am-body">
+              <div class="stepper">
+                <div class="step-item"><div class="step-circle active" id="sc1">1</div><div class="step-lbl">Brand Input</div></div>
+                <div class="step-item"><div class="step-circle" id="sc2">2</div><div class="step-lbl">Choose Format</div></div>
+                <div class="step-item"><div class="step-circle" id="sc3">3</div><div class="step-lbl">Launch</div></div>
+              </div>
+              <div class="panel active" id="p1">
+                <div class="field-group"><label class="field-lbl">Brand URL or Brief</label><input class="field-input" id="brand-input" type="text" placeholder="e.g. https://yourstore.com or 'Athletic shoes, $89, free shipping'" /></div>
+                <div class="field-group"><label class="field-lbl">Campaign Goal</label><select class="field-select"><option>Drive online purchases</option><option>Build brand awareness</option><option>Grow email list</option><option>Drive store visits</option></select></div>
+                <button class="gen-btn" id="gen-btn" onclick="runGen()">✨ Generate with AI</button>
+                <div class="prog-box" id="prog-box"><div class="prog-status" id="prog-status">Analyzing brand assets...</div><div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div><div style="font-size:10px;color:var(--darkpur);text-align:center">No creative agency or production team needed</div></div>
+                <div class="result-card" id="result-card">
+                  <div class="result-preview"><span class="result-preview-text" id="result-brand">Your Brand — 15 sec CTV Spot</span><div class="ok-badge">📱 OK to Shop</div></div>
+                  <div class="r-tags"><span class="r-tag">✅ CTV-optimized</span><span class="r-tag">✅ 15-sec spot</span><span class="r-tag">✅ Interactive overlay ready</span><span class="r-tag">✅ Brand-safe</span></div>
+                  <button class="next-btn" onclick="goStep(2)">Choose Interactive Format →</button>
+                </div>
+              </div>
+              <div class="panel" id="p2">
+                <p style="font-size:13px;color:var(--gray);margin-bottom:16px">Select your interactive overlay — one click, no technical setup required.</p>
+                <div class="fmt-grid">
+                  <div class="fmt-card" onclick="pickFmt(this,'OK to Shop')"><div class="fmt-icon">🛒</div><div class="fmt-name">OK to Shop</div><div class="fmt-desc">Press OK on remote to add to cart instantly</div></div>
+                  <div class="fmt-card" onclick="pickFmt(this,'Send to Phone')"><div class="fmt-icon">📱</div><div class="fmt-name">Send to Phone</div><div class="fmt-desc">Text a link to viewer's mobile device</div></div>
+                  <div class="fmt-card" onclick="pickFmt(this,'QR Code')"><div class="fmt-icon">📷</div><div class="fmt-name">QR Code</div><div class="fmt-desc">Scan with phone to visit landing page</div></div>
+                </div>
+                <button class="back-btn" onclick="goStep(1)">← Back</button>
+                <button class="next-btn" id="fmt-next" disabled onclick="goStep(3)">Set Budget & Launch →</button>
+              </div>
+              <div class="panel" id="p3">
+                <div id="pre-launch"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px"><div class="field-group"><label class="field-lbl">Daily Budget</label><input class="field-input" value="$150 / day" /></div><div class="field-group"><label class="field-lbl">Duration</label><input class="field-input" value="14 days" /></div></div><button class="gen-btn" style="width:100%;justify-content:center;font-size:15px;padding:14px" onclick="doLaunch()">🚀 Launch Campaign</button></div>
+                <div id="post-launch" style="display:none"><div class="launch-box" style="text-align:center"><div style="font-size:36px;margin-bottom:10px">🎉</div><div style="font-size:17px;font-weight:700;color:var(--midnight);margin-bottom:5px">Campaign Live on Roku!</div><div style="font-size:13px;color:var(--gray);margin-bottom:16px">Created in under 2 minutes — no agency, no production team needed.</div><div class="l-stats"><div class="l-stat"><span class="l-stat-num">2.1M</span><div class="l-stat-lbl">Est. Reach</div></div><div class="l-stat"><span class="l-stat-num" id="fmt-live">OK to Shop</span><div class="l-stat-lbl">Format Active</div></div><div class="l-stat"><span class="l-stat-num">$2,100</span><div class="l-stat-lbl">14-Day Budget</div></div></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GAP 3 ═════════════════════════════════════════════════ -->
+<div class="pane" id="pane-gap3">
+  <div class="gap-page">
+    <div class="sub-tabs" id="subtabs-gap3">
+      <button class="sub-btn active" onclick="showSub('gap3','the-gap')"><span class="sub-chip chip-gap">Gap</span> The Problem</button>
+      <button class="sub-btn" onclick="showSub('gap3','opportunity')"><span class="sub-chip chip-opp">Opportunity</span> The Idea & Options</button>
+      <button class="sub-btn" onclick="showSub('gap3','prototype')"><span class="sub-chip chip-proto">Prototype</span> See It in Action</button>
+    </div>
+
+    <div class="sub-pane active" id="gap3-the-gap">
+      <div class="sec-eyebrow">Gap 3 of 3 — The Broken Feedback Loop</div>
+      <h2 class="sec-h2">Attribution & Real-Time Measurement</h2>
+      <p class="sec-sub">Advertisers from search and social expect instant ROAS signals. Roku's measurement lag risks budget flight to Amazon DSP.</p>
+      <div class="stat-strip">
+        <div class="stat-box"><span class="stat-num">36%</span><div class="stat-lbl">of CTV budget increases redirected from social — expect real-time loops</div></div>
+        <div class="stat-box"><span class="stat-num">3×</span><div class="stat-lbl">ROAS improvement Amazon reports using its authenticated graph signals</div></div>
+        <div class="stat-box"><span class="stat-num">#1</span><div class="stat-lbl">cited barrier to scaling CTV: inability to prove ROAS fast enough</div></div>
+        <div class="stat-box"><span class="stat-num">18%</span><div class="stat-lbl">Roku platform revenue CAGR — at risk if mid-market can't scale</div></div>
+      </div>
+      <div class="split">
+        <div class="prob-card">
+          <h3>The Core Problem</h3>
+          <p>36% of new CTV advertisers are redirecting budgets from social; 32% from search. These buyers are used to Meta and Google's near-real-time optimization — adjust creative, see results in 24 hours, reallocate budget.<br><br>Roku's measurement — improving through iSpot and INCRMNTAL — still requires longer optimization windows. Cross-device attribution is murky. ROAS signals are delayed.<br><br>For mid-market advertisers who can't afford to wait weeks to know if a campaign worked, this friction is a reason not to scale — or a reason to choose Amazon DSP's authenticated graph instead.</p>
+        </div>
+        <div>
+          <div class="quote-box" style="margin-bottom:20px">
+            <p>Measuring the true impact of CTV has historically been tough. Roku's Ads API lets measurement partners sync delivery data in real time and power advanced measurement.</p>
+            <cite>— Kory, O., CSO at Haus, on Roku Ads API launch, Nov 2025</cite>
+          </div>
+          <table class="comp-table">
+            <thead><tr><th>Platform</th><th>Real-Time Measurement</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="roku-col">Roku</td><td class="roku-col">iSpot + INCRMNTAL + Ads API</td><td><span class="dot" style="background:var(--amber)"></span>Improving</td></tr>
+              <tr><td>Amazon Fire TV</td><td>Amazon authenticated graph</td><td><span class="dot" style="background:var(--green)"></span>Best-in-class</td></tr>
+              <tr><td>Samsung TV+</td><td>Amazon Publisher Cloud</td><td><span class="dot" style="background:var(--amber)"></span>Via Amazon</td></tr>
+              <tr><td>YouTube CTV</td><td>Google Ads integration</td><td><span class="dot" style="background:var(--green)"></span>Strong</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-pane" id="gap3-opportunity">
+      <div class="sec-eyebrow">Opportunity 3</div>
+      <h2 class="sec-h2">Close the Measurement Gap for the Mid-Market</h2>
+      <div class="big-idea-box">
+        <div class="big-idea-label">The Big Idea</div>
+        <div class="big-idea-text">Build a real-time performance dashboard inside Roku Ads Manager — giving mid-market advertisers the ROAS confidence they had on Meta and Google.</div>
+        <div class="big-idea-sub">Surfacing campaign results within 24 hours so advertisers can optimize and scale, rather than wait and stall — or worse, move budget to Amazon DSP.</div>
+      </div>
+      <div class="option-cards">
+        <div class="opt-card"><div class="opt-card-top"><span>📊</span><strong>Real-Time ROAS Dashboard</strong></div><div class="opt-card-body">Surface reach, frequency, completion rate, attributed site visits, and estimated ROAS within 24 hours in Ads Manager. Built on the Roku Ads API launched November 2025 — infrastructure already exists.</div></div>
+        <div class="opt-card"><div class="opt-card-top"><span>🔬</span><strong>Self-Serve Incrementality Reports</strong></div><div class="opt-card-body">Expose INCRMNTAL partnership data to Ads Manager users as an automated post-campaign report. First platform to give SMB advertisers TV incrementality without a managed service contract.</div></div>
+        <div class="opt-card"><div class="opt-card-top"><span>🔗</span><strong>Cross-Device Attribution Link</strong></div><div class="opt-card-body">Use Roku's authenticated household graph to connect TV ad exposure to downstream mobile and web actions — a single attribution line across screens without third-party cookies.</div></div>
+      </div>
+      <div class="rev-split">
+        <div class="rev-left"><div class="rev-label">Estimated Opportunity</div><div class="rev-num">$15–30M</div><div class="rev-sublbl">incremental annual revenue from improved advertiser retention</div><div class="rev-caveat">Conservative — retention data not publicly disclosed</div></div>
+        <div class="rev-right"><h4>Assumptions</h4><div class="assumption"><div class="a-num">1</div><span>Ads Manager advertiser base: 15,000+ active accounts (Roku targets 20,000+ new streaming advertisers in 2025)</span></div><div class="assumption"><div class="a-num">2</div><span>Current 90-day retention estimated ~40–50% for 1-campaign advertisers (industry benchmark for self-serve CTV)</span></div><div class="assumption"><div class="a-num">3</div><span>Target: lift 90-day retention by 10pp — supported by Meta's 2018 Ads Manager redesign achieving ~12pp lift via real-time reporting</span></div><div class="assumption"><div class="a-num">4</div><span>Average second-campaign spend: $2,000–$5,000 for SMB advertisers (IAB 2025 + Roku $500 minimum)</span></div><div class="sensitivity" style="margin-top:14px">Most sensitive variable: the undisclosed Ads Manager advertiser count. At 10K accounts + $2K avg, floor is $20M. At 20K accounts + $3K avg, approaches $60M.</div></div>
+      </div>
+      <div class="risk-box"><div class="risk-lbl">⚠ Tradeoff to Navigate</div><div class="risk-text">CTV attribution models are inherently imperfect. Overstated ROAS estimates erode advertiser trust when results don't materialize. Mitigation: label all figures as modeled with confidence intervals; use incrementality reports as the higher-credibility causal signal; never present modeled ROAS as deterministic truth.</div></div>
+      <div class="validate-box"><div class="validate-lbl">How I'd Validate This</div><div class="validate-item"><span class="v-arrow">→</span><span>Beta real-time dashboard with 300 Ads Manager advertisers who ran 1–2 campaigns and didn't return — measure re-activation rate vs control group at 60 days</span></div><div class="validate-item"><span class="v-arrow">→</span><span>Does next-day performance data increase avg campaign budget by ≥20% in 30 days following first campaign? That's the proxy for measurement confidence unlocking spend</span></div><div class="validate-item"><span class="v-arrow">→</span><span>Compare advertiser 90-day retention (Roku Ads Manager vs Amazon DSP self-serve) before and after dashboard launch — is the gap closing?</span></div></div>
+    </div>
+
+    <div class="sub-pane" id="gap3-prototype">
+      <div class="proto-header">
+        <div><div class="proto-title-txt">Real-Time ROAS Dashboard</div><div class="proto-desc-txt">Switch campaigns, click metrics to drill in, hover bars, refresh data, optimize — all interactive</div></div>
+        <div class="proto-badge">▶ Interactive</div>
+      </div>
+      <div class="demo-shell">
+        <div class="demo-bar"><div class="ddot" style="background:#ff5f57"></div><div class="ddot" style="background:#ffbd2e"></div><div class="ddot" style="background:#28c840"></div><span class="demo-lbl">Ads Manager — Real-Time ROAS Dashboard · Gap 3</span></div>
+        <div class="demo-inner" style="background:#FAF7FD;padding:0">
+          <div class="dash">
+            <div class="camp-tabs">
+              <div class="c-tab active" onclick="switchCamp(this,'Athletic Brand')">Athletic Brand</div>
+              <div class="c-tab" onclick="switchCamp(this,'Home Goods Co')">Home Goods Co</div>
+              <div class="c-tab" onclick="switchCamp(this,'Tech Startup')">Tech Startup</div>
+            </div>
+            <div class="dash-hdr">
+              <div><div class="dash-title-txt" id="dash-name">Athletic Brand — Spring CTV Campaign</div><div class="dash-sub-txt">Day 7 of 14 · Roku Ads Manager · Last updated: just now</div></div>
+              <div class="live-badge"><div class="live-dot"></div>Live</div>
+            </div>
+            <div class="metrics-row">
+              <div class="m-card" onclick="drillM('reach')"><div class="m-lbl">Households Reached</div><span class="m-val" id="mv-reach">142,847</span><div class="m-delta">↑ +2,341 today</div></div>
+              <div class="m-card" onclick="drillM('comp')"><div class="m-lbl">Completion Rate</div><span class="m-val" id="mv-comp">84.2%</span><div class="m-delta">↑ +2.1pp vs benchmark</div></div>
+              <div class="m-card" onclick="drillM('visits')"><div class="m-lbl">Attributed Site Visits</div><span class="m-val" id="mv-visits">3,891</span><div class="m-delta">↑ +187 today</div></div>
+              <div class="m-card" onclick="drillM('roas')"><div class="m-lbl">Est. ROAS</div><span class="m-val" id="mv-roas" style="color:var(--purple)">2.8×</span><div class="m-delta">↑ Strong — above target</div></div>
+            </div>
+            <div class="drill-panel" id="drill-panel"><strong id="dp-title" style="color:var(--midnight);display:block;margin-bottom:5px"></strong><span id="dp-body" style="font-size:12px;color:var(--gray);line-height:1.6"></span></div>
+            <div class="chart-card"><div class="chart-lbl">Daily Attributed Site Visits — hover each bar</div><div class="bar-row" id="bar-row"></div></div>
+            <div class="roas-panel">
+              <div class="gauge-wrap"><svg class="gauge-svg" width="72" height="72" viewBox="0 0 72 72"><circle class="gauge-bg" cx="36" cy="36" r="27"/><circle class="gauge-arc" id="gauge-arc" cx="36" cy="36" r="27"/></svg><div class="gauge-lbl" id="gauge-lbl">2.8×</div></div>
+              <div class="roas-text"><h4>Incrementality Confirmed — INCRMNTAL × Roku</h4><p>Based on Roku's authenticated household graph. All figures are modeled estimates with confidence intervals — labeled clearly to protect advertiser trust.</p></div>
+            </div>
+            <div class="dash-controls">
+              <button class="d-btn primary" onclick="refreshD()">↻ Refresh Data</button>
+              <button class="d-btn secondary" onclick="exportD(this)">↓ Export Report</button>
+              <button class="d-btn secondary" onclick="optimizeD(this)">⚡ Optimize Campaign</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PRIORITIZE ═════════════════════════════════════════════ -->
+<div class="pane" id="pane-prioritize">
+  <div class="prioritize-page">
+    <div class="sec-eyebrow">Where to Start</div>
+    <h2 class="sec-h2">Impact vs. Implementation Effort</h2>
+    <p class="sec-sub" style="margin-bottom:36px">Click any initiative to see the rationale. Higher impact + lower effort = start here.</p>
+    <div class="p-grid">
+      <div>
+        <div class="twobytwo-wrap">
+          <div class="axis-y-lbl"><span>Higher Effort · · · · · · · · · · · Lower Effort</span></div>
+          <div class="quad-grid">
+            <div class="quad"><div class="quad-lbl dim">Build Later</div><div class="bubble soft" onclick="showQ('ai')"><div class="bubble-n">2</div><div class="bubble-t">AI Creative Studio</div></div></div>
+            <div class="quad"><div class="quad-lbl bright">★ Start Here</div><div class="bubble" onclick="showQ('freq')"><div class="bubble-n">1</div><div class="bubble-t">OS Frequency Cap</div></div><div class="bubble" style="margin-top:7px" onclick="showQ('tmpl')"><div class="bubble-n">2</div><div class="bubble-t">Interactive Templates</div></div></div>
+            <div class="quad"><div class="quad-lbl dim">Explore</div><div class="bubble soft" onclick="showQ('incr')"><div class="bubble-n">3</div><div class="bubble-t">Incrementality Reports</div></div></div>
+            <div class="quad"><div class="quad-lbl bright">Quick Win</div><div class="bubble" onclick="showQ('dash')"><div class="bubble-n">3</div><div class="bubble-t">Real-Time Dashboard</div></div></div>
+          </div>
+          <div class="axis-x-row"><span>← Lower Impact</span><span>Higher Impact →</span></div>
+        </div>
+        <div class="q-detail" id="q-detail"><div class="q-det-title" id="q-det-title"></div><div class="q-det-body" id="q-det-body"></div></div>
+      </div>
+      <div class="week1-panel">
+        <div class="week1-title">What I'd Want to Learn in Week 1</div>
+        <div class="q-item"><div class="q-num">1</div><div class="q-text">What does Roku's internal data say about cross-app ad repetition rates? Is frequency as severe as external signals suggest?</div></div>
+        <div class="q-item"><div class="q-num">2</div><div class="q-text">How many Ads Manager advertisers uploaded video creative but never activated an interactive format — and why?</div></div>
+        <div class="q-item"><div class="q-num">3</div><div class="q-text">What is the 90-day retention rate for Ads Manager advertisers who ran one campaign and did not return?</div></div>
+        <div class="q-item"><div class="q-num">4</div><div class="q-text">Which measurement partnerships (iSpot, INCRMNTAL) already surface data that could power a real-time dashboard vs net-new build?</div></div>
+        <div class="q-item"><div class="q-num">5</div><div class="q-text">What is the internal appetite for OS-level frequency capping given publisher contracts and ad fill obligations?</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="closing-bar"><p>Roku has the data, the platform, and the reach.<br>The opportunity is to make the experience layer as powerful as the inventory layer — before competitors close the gap.</p></div>
+</div>
+
+<!-- ══ REFERENCES ═════════════════════════════════════════════ -->
+<div class="pane" id="pane-refs">
+  <div class="refs-page">
+    <h2 class="refs-h">References</h2>
+    <p class="refs-sub">APA 7th Edition · All sources verified April 2026</p>
+    <div class="refs-grid">
+      <div class="ref-item"><span class="ref-n">[1]</span>Bloomberg. (2026, April 16). <em>Roku's platform crosses 100 million users.</em> https://bloomberg.com</div>
+      <div class="ref-item"><span class="ref-n">[2]</span>Roku, Inc. (2026, April 13). <em>Form 8-K: Q1 2026 segment restructure.</em> SEC. https://businesswire.com</div>
+      <div class="ref-item"><span class="ref-n">[3]</span>Roku, Inc. (2025). <em>Form 8-K: FY 2025 annual results.</em> SEC. https://sec.gov</div>
+      <div class="ref-item"><span class="ref-n">[4]</span>Roku, Inc. (2025, December). <em>Streaming in 2026: 5 predictions.</em> Roku Advertising. https://advertising.roku.com</div>
+      <div class="ref-item"><span class="ref-n">[5]</span>Roku, Inc. & Dentsu. (2025, June 11). <em>Key insights for shoppable TV success.</em> Roku Newsroom.</div>
+      <div class="ref-item"><span class="ref-n">[6]</span>Innovid. (2025). <em>2025 CTV advertising insights report.</em> https://innovid.com</div>
+      <div class="ref-item"><span class="ref-n">[7]</span>Strategus. (2025, August 28). <em>Roku ads guide 2025.</em> https://strategus.com</div>
+      <div class="ref-item"><span class="ref-n">[8]</span>Amazon Ads. (2026, April). <em>NewFronts 2026 advertising news.</em> https://advertising.amazon.com</div>
+      <div class="ref-item"><span class="ref-n">[9]</span>Samsung Electronics. (2026, March). <em>Samsung launches Performance TV.</em> Samsung Newsroom.</div>
+      <div class="ref-item"><span class="ref-n">[10]</span>Pixalate. (2026, April). <em>Q1 2026 top 100 CTV apps by ad revenue.</em> https://pixalate.com</div>
+      <div class="ref-item"><span class="ref-n">[11]</span>IAB. (2025). <em>2025 video ad spend & 2026 outlook.</em> https://iab.com</div>
+      <div class="ref-item"><span class="ref-n">[12]</span>Lore, T. (2026, April 22). <em>Integrating ads into your Roku channel.</em> CompanionLink. https://companionlink.com</div>
+      <div class="ref-item"><span class="ref-n">[13]</span>MacroTrends. (2026). <em>Roku revenue 2016–2025.</em> https://macrotrends.net</div>
+      <div class="ref-item"><span class="ref-n">[14]</span>ppc.land. (2026, April 20). <em>Roku hits 100M households.</em> https://ppc.land</div>
+      <div class="ref-item"><span class="ref-n">[15]</span>Cord Cutters News. (2026, April 11). <em>Roku quietly adds feature to Roku City.</em> https://cordcuttersnews.com</div>
+    </div>
+  </div>
+  <footer><div class="footer-brand">ROKU</div><div class="footer-note">APM Candidate Study · Ad Experiences · MS Business Analytics, UConn · April 2026</div></footer>
+</div>
+
+<script>
+// ── TAB SWITCHING ──────────────────────────────────────────────
+function showTab(id){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── SUB-TAB SWITCHING ──────────────────────────────────────────
+function showSub(gap, sub){
+  const prefix = gap+'-';
+  document.querySelectorAll('[id^="'+prefix+'"]').forEach(p=>p.classList.remove('active'));
+  document.getElementById(prefix+sub).classList.add('active');
+  const tabs = document.querySelectorAll('#subtabs-'+gap+' .sub-btn');
+  tabs.forEach(b=>b.classList.remove('active'));
+  event.target.closest('.sub-btn').classList.add('active');
+}
+
+// ── GAP 1: FREQUENCY SIMULATOR ────────────────────────────────
+const tdata={
+  tubi:   {ads:[1,3,6],   blocked:[3,6]},
+  roku:   {ads:[0,2,5,7], blocked:[2,5,7]},
+  peacock:{ads:[1,3,4,6], blocked:[3,4,6]},
+};
+function renderTracks(mode){
+  ['tubi','roku','peacock'].forEach(app=>{
+    const el=document.getElementById('track-'+app); if(!el)return; el.innerHTML='';
+    for(let i=0;i<8;i++){
+      const s=document.createElement('div'); s.className='slot';
+      const isAd=tdata[app].ads.includes(i), isBlk=tdata[app].blocked.includes(i);
+      if(isAd){if(mode==='with'&&isBlk){s.className+=' ad-good';s.textContent='✓';}else{s.className+=' ad-bad';s.textContent='AD';}}
+      else{s.className+=' content';s.textContent='▶';}
+      el.appendChild(s);
+    }
+  });
+}
+function setMode(mode){
+  document.getElementById('btn-without').className='sim-btn '+(mode==='without'?'on':'off');
+  document.getElementById('btn-with').className='sim-btn '+(mode==='with'?'on':'off');
+  renderTracks(mode);
+  const ad=document.getElementById('ad-scr'),cnt=document.getElementById('cnt-scr');
+  const chip=document.getElementById('ad-chip'),ins=document.getElementById('insight');
+  if(!ad)return;
+  if(mode==='without'){
+    ad.classList.remove('hidden');cnt.style.display='none';
+    chip.textContent='Shown 9× this session';chip.style.background='rgba(239,68,68,.7)';
+    ins.className='insight bad';
+    ins.innerHTML='❌ Progressive Insurance served <strong>9 times</strong> in one session — no cross-app cap exists. Roku\'s own 2026 predictions warn viewers will "vote with their remotes."';
+  } else {
+    ad.classList.add('hidden');cnt.style.display='flex';
+    chip.textContent='Capped — max 2× enforced';chip.style.background='rgba(34,197,94,.7)';
+    ins.className='insight good';
+    ins.innerHTML='✅ OS-level cap enforced — Progressive shown max <strong>2× per session</strong>. 7 redundant impressions blocked. Viewer experience protected. Advertiser reach preserved at threshold.';
+  }
+}
+// init gap1
+renderTracks('without');
+const ins0=document.getElementById('insight');
+if(ins0){ins0.className='insight bad';ins0.innerHTML='❌ Progressive Insurance served <strong>9 times</strong> in one session — no cross-app cap exists. Roku\'s own 2026 predictions warn viewers will "vote with their remotes."';}
+
+// ── GAP 2: ADS MANAGER ────────────────────────────────────────
+let pickedFmt=null;
+function goStep(n){
+  for(let i=1;i<=3;i++){
+    document.getElementById('p'+i).className='panel'+(i===n?' active':'');
+    const sc=document.getElementById('sc'+i); if(!sc)continue;
+    sc.className='step-circle'+(i===n?' active':i<n?' done':'');
+    sc.textContent=i<n?'✓':String(i);
+    const d=document.getElementById('d'+i); if(d) d.className='am-dot'+(i===n?' active':i<n?' done':'');
+  }
+}
+function runGen(){
+  const raw=document.getElementById('brand-input').value.trim();
+  let brand=raw||'Your Brand';
+  if(raw.startsWith('http')){try{brand=new URL(raw).hostname.replace('www.','');}catch(e){}}
+  const btn=document.getElementById('gen-btn'); btn.disabled=true; btn.textContent='Generating...';
+  const box=document.getElementById('prog-box'); box.classList.add('show');
+  const fill=document.getElementById('prog-fill'),status=document.getElementById('prog-status');
+  const msgs=['Analyzing brand assets...','Writing visual script...','Optimizing for 10-foot UI...','Adding interactive overlay...','Finalizing creative...'];
+  let pct=0;
+  const iv=setInterval(()=>{
+    pct+=2; fill.style.width=pct+'%';
+    status.textContent=msgs[Math.min(Math.floor(pct/20),4)];
+    if(pct>=100){clearInterval(iv);box.classList.remove('show');document.getElementById('result-brand').textContent=brand+' — 15 sec CTV Spot';document.getElementById('result-card').classList.add('show');btn.style.display='none';}
+  },60);
+}
+function pickFmt(el,name){
+  document.querySelectorAll('.fmt-card').forEach(c=>c.classList.remove('picked'));
+  el.classList.add('picked');pickedFmt=name;document.getElementById('fmt-next').disabled=false;
+}
+function doLaunch(){
+  document.getElementById('pre-launch').style.display='none';
+  document.getElementById('post-launch').style.display='block';
+  document.getElementById('fmt-live').textContent=pickedFmt||'OK to Shop';
+}
+
+// ── GAP 3: DASHBOARD ──────────────────────────────────────────
+const camps={
+  'Athletic Brand':{reach:142847,comp:'84.2%',visits:3891,roas:'2.8',data:[210,285,342,398,445,512,498]},
+  'Home Goods Co': {reach:89320, comp:'79.5%',visits:2104,roas:'1.9',data:[140,165,188,202,215,230,221]},
+  'Tech Startup':  {reach:211540,comp:'88.1%',visits:5672,roas:'3.4',data:[310,380,450,520,590,640,612]},
+};
+const drills={
+  reach: {t:'Households Reached',b:'Unique authenticated Roku households exposed to at least one impression. Measured via Roku\'s first-party OS-level data — no third-party cookie dependency. Device graph deduplication across The Roku Channel + third-party FAST apps.'},
+  comp:  {t:'Video Completion Rate',b:'% of impressions where viewer watched 100% of the ad unit. Roku benchmark: 76.4% for 15-sec spots. Your campaign is 7.8pp above benchmark — strong signal for creative quality and audience relevance.'},
+  visits:{t:'Attributed Site Visits',b:'Site visits within 7 days of ad exposure, matched via Roku\'s authenticated household graph to downstream browser/app activity. Confidence interval: ±8%. Incrementality confirmed via INCRMNTAL holdout — 34% of visits are net-new, not organic.'},
+  roas:  {t:'Estimated ROAS (Modeled)',b:'Modeled return on ad spend — NOT deterministic. Based on attributed site visits × average order value × incrementality factor. Labeled as estimated to protect advertiser trust. Full methodology available in the Incrementality Report.'},
+};
+const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+function buildBars(data){
+  const row=document.getElementById('bar-row'); if(!row)return; row.innerHTML='';
+  const mx=Math.max(...data);
+  data.forEach((v,i)=>{
+    const col=document.createElement('div');col.className='bar-col';
+    const bar=document.createElement('div');bar.className='bar';bar.style.height='0px';
+    const tip=document.createElement('div');tip.className='bar-tip';tip.textContent=v.toLocaleString()+' visits';
+    bar.appendChild(tip);
+    const lbl=document.createElement('div');lbl.className='bar-day';lbl.textContent=days[i];
+    col.appendChild(bar);col.appendChild(lbl);row.appendChild(col);
+    setTimeout(()=>{bar.style.height=Math.round(v/mx*68)+'px';},i*70+100);
+  });
+}
+function setGauge(roas){
+  const r=27,circ=2*Math.PI*r,pct=Math.min(parseFloat(roas)/5,1);
+  const arc=document.getElementById('gauge-arc'); if(arc) arc.style.strokeDasharray=(pct*circ)+' '+circ;
+  const lbl=document.getElementById('gauge-lbl'); if(lbl) lbl.textContent=roas+'×';
+}
+function loadCamp(name){
+  const c=camps[name];
+  const r=document.getElementById('mv-reach'),cp=document.getElementById('mv-comp'),v=document.getElementById('mv-visits'),ro=document.getElementById('mv-roas');
+  if(r)r.textContent=c.reach.toLocaleString();
+  if(cp)cp.textContent=c.comp;
+  if(v)v.textContent=c.visits.toLocaleString();
+  if(ro)ro.textContent=c.roas+'×';
+  const dn=document.getElementById('dash-name'); if(dn) dn.textContent=name+' — Spring CTV Campaign';
+  const dp=document.getElementById('drill-panel'); if(dp) dp.style.display='none';
+  buildBars(c.data);
+  setTimeout(()=>setGauge(c.roas),300);
+}
+function switchCamp(el,name){
+  document.querySelectorAll('.c-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');loadCamp(name);
+}
+function drillM(key){
+  const d=drills[key],panel=document.getElementById('drill-panel'); if(!panel)return;
+  panel.style.display='block';panel.style.animation='none';panel.offsetHeight;panel.style.animation='';
+  document.getElementById('dp-title').textContent=d.t;
+  document.getElementById('dp-body').textContent=d.b;
+}
+function refreshD(){
+  const r=document.getElementById('mv-reach'),v=document.getElementById('mv-visits'),ro=document.getElementById('mv-roas'); if(!r)return;
+  [r,v,ro].forEach(el=>el.style.opacity='.3');
+  const campName=document.querySelector('.c-tab.active').textContent;
+  const c=camps[campName];
+  setTimeout(()=>{
+    r.textContent=(c.reach+Math.floor(Math.random()*2000+300)).toLocaleString();
+    v.textContent=(c.visits+Math.floor(Math.random()*200+50)).toLocaleString();
+    const nr=(parseFloat(c.roas)+(Math.random()*.3-.1)).toFixed(1);
+    ro.textContent=nr+'×'; setGauge(nr);
+    [r,v,ro].forEach(el=>el.style.opacity='1');
+  },450);
+}
+function exportD(btn){btn.textContent='✅ Exported';setTimeout(()=>{btn.textContent='↓ Export Report';},2000);}
+function optimizeD(btn){btn.textContent='⚡ Optimizing...';setTimeout(()=>{btn.textContent='✅ Budget shifted to top slots';setTimeout(()=>{btn.textContent='⚡ Optimize Campaign';},2500);},1200);}
+setInterval(()=>{const el=document.getElementById('mv-reach');if(el&&el.style.opacity!=='0.3'){const v=parseInt(el.textContent.replace(/,/g,''));el.textContent=(v+Math.floor(Math.random()*6+2)).toLocaleString();}},3500);
+loadCamp('Athletic Brand');
+
+// ── 2×2 MATRIX ────────────────────────────────────────────────
+const qdata={
+  freq:{t:'① OS Frequency Cap — Start Here',b:'High impact, manageable effort. Roku already has OS-level ad serving data — this is an intelligence layer on top of existing infrastructure. Biggest challenge: publisher fill guarantees. Recommend piloting on The Roku Channel first, prove the viewer retention lift, then negotiate with third-party publishers from a position of evidence.'},
+  tmpl:{t:'② Interactive Overlay Templates — Start Here',b:'Lowest effort path to interactive format adoption. Pre-built templates attach to any existing video creative with one click — no rebuilding required. Immediately de-risks Samsung + Amazon\'s July 2026 shoppable launch by locking in mid-market advertisers with interactive formats before competitors do.'},
+  ai:  {t:'② AI Creative Studio — Build Later',b:'Highest effort but transformational. Requires GenAI video generation infrastructure, brand safety guardrails, and creative review workflows. Channel conflict with existing agency partners needs careful management. Start with Interactive Templates first to prove format adoption, then build AI Creative Studio for advertisers with no existing video assets.'},
+  dash:{t:'③ Real-Time Dashboard — Quick Win',b:'High ROI for relatively low effort. Roku Ads API launched November 2025 — the data infrastructure exists. This is primarily a frontend build exposing existing data usably for self-serve advertisers. Target metric: ≥20% increase in second-campaign spend within 30 days of first campaign completion.'},
+  incr:{t:'③ Incrementality Reports — Explore',b:'High credibility signal for advertisers who need causal proof, not correlation. Roku\'s INCRMNTAL partnership exists — this is about surfacing it to Ads Manager users as an automated post-campaign report. Lower urgency than the dashboard but more defensible as a measurement product long-term.'},
+};
+function showQ(key){
+  const det=document.getElementById('q-detail'),d=qdata[key]; if(!det)return;
+  det.style.display='block';det.style.animation='none';det.offsetHeight;det.style.animation='slideIn .25s ease';
+  document.getElementById('q-det-title').textContent=d.t;
+  document.getElementById('q-det-body').textContent=d.b;
+}
+</script>
+</body>
+</html>
